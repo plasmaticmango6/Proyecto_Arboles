@@ -65,18 +65,18 @@ void grafo_lista_adj(vector<vector<int>> &A, vector<int> lista_adj[])
     }
 }
 
-void dfs(int nodo_inicial)
+void dfs(int nodo_inicial, bool arreglo_visit[], vector<int> lista_adj[])
 {
-    if (visitados[nodo_inicial])
+    if (arreglo_visit[nodo_inicial])
         return;
-    visitados[nodo_inicial] = true;
+    arreglo_visit[nodo_inicial] = true;
 
     // Espacio para hacer las operaciones pertinentes
 
     // El codigo siguiente es para recorrer los nodos adyacentes al nodo inicial
     for (auto u : lista_adj[nodo_inicial])
     {
-        dfs(u);
+        dfs(u, arreglo_visit, lista_adj);
     }
 }
 
@@ -109,5 +109,6 @@ int main()
     bool visitados[vertices];
     A = grafo_mat_adj(A, marc);
     grafo_lista_adj(A, lista_adj);
+    dfs(0, visitados, lista_adj);
     return 0;
 }
