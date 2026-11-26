@@ -6,5 +6,5 @@ integrantes:
  fecha: 25 de nov del 2026*/
 
 /*git add .
-git branch -M main
-git push -u origin main*/
+git commit -m "comentario de que cambios se relaizaron"
+git push*/
