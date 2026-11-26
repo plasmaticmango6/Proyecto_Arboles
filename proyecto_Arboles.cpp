@@ -65,24 +65,25 @@ void grafo_lista_adj(vector<vector<int>> &A, vector<int> lista_adj[])
     }
 }
 
-void dfs(int nodo_inicial, bool arreglo_visit[], vector<int> lista_adj[])
+int dfs(int nodo_inicial, bool arreglo_visit[], vector<int> lista_adj[], int &sub_nodo_cont, int &sub_aris_cont)
 {
     if (arreglo_visit[nodo_inicial])
         return;
     arreglo_visit[nodo_inicial] = true;
 
+    sub_nodo_cont++;
     // Espacio para hacer las operaciones pertinentes
-
+    sub_aris_cont += (lista_adj[nodo_inicial].size()) / 2;
     // El codigo siguiente es para recorrer los nodos adyacentes al nodo inicial
     for (auto u : lista_adj[nodo_inicial])
     {
-        dfs(u, arreglo_visit, lista_adj);
+        dfs(u, arreglo_visit, lista_adj, sub_nodo_cont, sub_aris_cont);
     }
 }
 
 int main()
 {
-    int vertices, marc = -1;
+    int vertices, marc = -1, sub_nodo_cont = 0, sub_aris_cont = 0;
     bool band;
 
     // cantidad de vertices
@@ -104,11 +105,38 @@ int main()
             band = true;
     } while (band != true);
 
+    // declaracion de variables vectores
     vector<vector<int>> A(vertices, vector<int>(vertices));
     vector<int> lista_adj[vertices];
+    vector<int> comp_conexos;
+    vector<int> verif_bosque;
     bool visitados[vertices];
+
+    // llamada a funciones principales
     A = grafo_mat_adj(A, marc);
     grafo_lista_adj(A, lista_adj);
-    dfs(0, visitados, lista_adj);
+
+    for (int i = 0; i < sizeof(lista_adj); i++)
+    {
+        visitados[i] = false;
+    }
+
+    for (int n = 0; n < vertices; n++)
+    {
+        if (visitados[n])
+            break;
+        else
+        {
+            comp_conexos.push_back(n);
+            dfs(n, visitados, lista_adj, sub_nodo_cont, sub_aris_cont);
+            if (sub_aris_cont = (sub_nodo_cont - 1))
+                verif_bosque.push_back(1);
+            else
+                verif_bosque.push_back(0);
+        }
+        sub_aris_cont = 0;
+        sub_nodo_cont = 0;
+    }
+
     return 0;
 }
