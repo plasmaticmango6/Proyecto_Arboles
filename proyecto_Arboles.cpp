@@ -49,15 +49,14 @@ vector<vector<int>> grafo_mat_adj(vector<vector<int>> &A, int inicio_marcador)
     return A;
 }
 
-void grafo_lista_adj(vector<vector<int>> &A, vector<int> lista_adj[])
+void grafo_lista_adj(vector<vector<int>> &A, vector<vector<int>> &lista_adj)
 {
-    int marcador = -1;
     for (size_t i = 0; i < A.size(); ++i)
     {
         for (size_t j = 0; j < A[i].size(); ++j)
         {
             if (i == j)
-                break;
+                continue;
             if (A[i][j] == 1)
             {
                 lista_adj[i].push_back(j);
@@ -66,7 +65,7 @@ void grafo_lista_adj(vector<vector<int>> &A, vector<int> lista_adj[])
     }
 }
 
-int dfs(int nodo_inicial, bool arreglo_visit[], vector<int> lista_adj[], int &sub_nodo_cont, int &sub_aris_cont)
+void dfs(int nodo_inicial, vector<bool> &arreglo_visit, vector<vector<int>> &lista_adj, int &sub_nodo_cont, int &sub_aris_cont)
 {
     if (arreglo_visit[nodo_inicial])
         return;
@@ -74,7 +73,7 @@ int dfs(int nodo_inicial, bool arreglo_visit[], vector<int> lista_adj[], int &su
 
     sub_nodo_cont++;
     // Espacio para hacer las operaciones pertinentes
-    sub_aris_cont += (lista_adj[nodo_inicial].size()) / 2;
+    sub_aris_cont += lista_adj[nodo_inicial].size();
     // El codigo siguiente es para recorrer los nodos adyacentes al nodo inicial
     for (auto u : lista_adj[nodo_inicial])
     {
@@ -83,11 +82,11 @@ int dfs(int nodo_inicial, bool arreglo_visit[], vector<int> lista_adj[], int &su
 }
 
 // calcula los grados de cada vertice y dice cuales son los de grado 1
-void grados(vector<int> lista_adyacencia[])
+void grados(vector<vector<int>> &lista_adyacencia)
 {
     vector<int> hojas;
     // recorrer cada vector
-    for (int i = 0; i < sizeof(lista_adyacencia); i++)
+    for (size_t i = 0; i < lista_adyacencia.size(); i++)
     {
         if (lista_adyacencia[i].size() == 1)
             hojas.push_back(i);
@@ -95,7 +94,7 @@ void grados(vector<int> lista_adyacencia[])
     }
 
     cout << "los nodos de grado 1 son: ";
-    for (int j = 0; j < sizeof(hojas); j++)
+    for (size_t j = 0; j < hojas.size(); j++)
     {
         cout << (hojas[j]) + 1 << ", ";
     }
@@ -128,20 +127,14 @@ int main()
 
     // declaracion de variables vectores
     vector<vector<int>> A(vertices, vector<int>(vertices));
-    vector<int> lista_adj[vertices];
+    vector<vector<int>> lista_adj(vertices);
     vector<int> comp_conexos;
     vector<int> verif_bosque;
-    bool visitados[vertices];
+    vector<bool> visitados(vertices, false);
 
     // llamada a funciones principales
     A = grafo_mat_adj(A, marc);
     grafo_lista_adj(A, lista_adj);
-
-    // incializar visitados en false
-    for (int i = 0; i < sizeof(lista_adj); i++)
-    {
-        visitados[i] = false;
-    }
 
     // el dfs del dfs, analizar grafos y componentes
     for (int n = 0; n < vertices; n++)
@@ -164,17 +157,32 @@ int main()
     }
 
     // verificacion de si es un bosque
-    for (int p; p < sizeof(comp_conexos); p++)
+    for (size_t p = 0; p < verif_bosque.size(); p++)
     {
-        if (comp_conexos[p] == 0)
+        if (verif_bosque[p] == 0)
         {
             cout << "el grafo no es un bosque" << endl;
             break;
         }
+        else
+            cout << "el grafo es un bosque" << endl;
     }
 
     // impresion de los grados de los vertices
     grados(lista_adj);
+
+    cout << "Lista de adyacencia:" << endl;
+    for (size_t i = 0; i < lista_adj.size(); ++i)
+    {
+        cout << i + 1 << ": ";
+        for (size_t j = 0; j < lista_adj[i].size(); ++j)
+        {
+            if (j > 0)
+                cout << ", ";
+            cout << lista_adj[i][j] + 1;
+        }
+        cout << endl;
+    }
 
     return 0;
 }
