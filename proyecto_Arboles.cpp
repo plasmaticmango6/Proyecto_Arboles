@@ -73,7 +73,7 @@ void dfs(int nodo_inicial, vector<bool> &arreglo_visit, vector<vector<int>> &lis
 
     sub_nodo_cont++;
     // Espacio para hacer las operaciones pertinentes
-    sub_aris_cont += lista_adj[nodo_inicial].size();
+    sub_aris_cont += static_cast<int>(lista_adj[nodo_inicial].size());
     // El codigo siguiente es para recorrer los nodos adyacentes al nodo inicial
     for (auto u : lista_adj[nodo_inicial])
     {
@@ -103,9 +103,10 @@ void grados(vector<vector<int>> &lista_adyacencia)
 
 int main()
 {
-    int vertices, marc = -1, sub_nodo_cont = 0, sub_aris_cont = 0;
+    int vertices, marc = -1, sub_nodo_cont = 0, sub_aris_cont = 0, comp_conx = 0;
     bool band;
 
+    cout << "ANALIZADOR DE ARBOLES" << endl;
     // cantidad de vertices
     do
     {
@@ -128,9 +129,8 @@ int main()
     // declaracion de variables vectores
     vector<vector<int>> A(vertices, vector<int>(vertices));
     vector<vector<int>> lista_adj(vertices);
-    vector<int> comp_conexos;
-    vector<int> verif_bosque;
     vector<bool> visitados(vertices, false);
+    bool es_bosque = true;
 
     // llamada a funciones principales
     A = grafo_mat_adj(A, marc);
@@ -140,32 +140,51 @@ int main()
     for (int n = 0; n < vertices; n++)
     {
         if (visitados[n])
-            break;
-        else
         {
-            // verificacion de cuantos arboles y cuantos ciclos hay
-            comp_conexos.push_back(n);
-            dfs(n, visitados, lista_adj, sub_nodo_cont, sub_aris_cont);
-            if (sub_aris_cont = (sub_nodo_cont - 1))
-                verif_bosque.push_back(1);
-            else
-                verif_bosque.push_back(0);
+            continue;
         }
+        comp_conx += 1;
+        dfs(n, visitados, lista_adj, sub_nodo_cont, sub_aris_cont);
+        sub_aris_cont /= 2;
+        if (sub_aris_cont != sub_nodo_cont - 1)
+            es_bosque = false;
+
         // inciar contadores de aristas y vertices
         sub_aris_cont = 0;
         sub_nodo_cont = 0;
     }
 
-    // verificacion de si es un bosque
-    for (size_t p = 0; p < verif_bosque.size(); p++)
+    // impresion de vertices y aristas
+    cout << "vertices: " << vertices << endl;
+    cout << "aristas: " << endl;
+
+    // verificacion de si es un bosque, arbol o ciclo
+    if (comp_conx != 1)
     {
-        if (verif_bosque[p] == 0)
-        {
-            cout << "el grafo no es un bosque" << endl;
-            break;
-        }
+        cout << "Todo el grafo no es conexo" << endl;
+        cout << "sin embargo, no se sabe la conexidad de cada componente" << endl;
+
+        if (es_bosque)
+            cout << "El grafo completo es un bosque" << endl;
         else
-            cout << "el grafo es un bosque" << endl;
+        {
+            cout << "El grafo completo no es un bosque" << endl;
+            cout << "(el grafo incluye ciclos)" << endl;
+        }
+    }
+    else
+    {
+        cout << "El grafo completo es conexo" << endl;
+        for (size_t i = 0; i < visitados.size(); ++i)
+            visitados[i] = false;
+        sub_aris_cont = 0;
+        sub_nodo_cont = 0;
+        dfs(0, visitados, lista_adj, sub_nodo_cont, sub_aris_cont);
+        sub_aris_cont /= 2;
+        if (sub_aris_cont == sub_nodo_cont - 1)
+            cout << "El grafo es un ARBOL" << endl;
+        else
+            cout << "Pero es un grafo con ciclos" << endl;
     }
 
     // impresion de los grados de los vertices
